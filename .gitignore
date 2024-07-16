@@ -1,0 +1,59 @@
+# .NET
+project.lock.json
+project.fragment.lock.json
+*.pdb
+
+# VS Code files for those working on multiple tools
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# DotCover Code Coverage Tool
+*.dotCover#
+
+Windows Store app package directories and files
+Package.StoreAssociation.xml
+_pkginfo.txt
+*.appx
+*.appxbundle
+*.appxupload
+
+# Node.js
+.ntvs_analysis.dat
+node_modules/
+jspm_packages/
+web_modules/
+
+# dotenv environment variables
+.env
+.env.test
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Custom rules here
+bin/
+ignore/
+depreciated/
+Working/
+Registry/
+venv/
+temp/
+obsolete/
+testing/
+test/
+PSGoogleTranslate/
+Languages.csv
+python_venv
