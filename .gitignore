@@ -48,7 +48,6 @@ bin/
 ignore/
 depreciated/
 Working/
-Registry/
 venv/
 temp/
 obsolete/

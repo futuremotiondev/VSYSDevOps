@@ -79,7 +79,6 @@
                          'Get-WindowsOpenDirectories',
                          'Get-WindowsOSArchitecture',
                          'Get-WindowsProcessOverview',
-                         'Merge-FlattenDirectory',
                          'Move-FileToFolder',
                          'Move-FileToSubfolder',
                          'Open-WindowsExplorerTo',
@@ -127,7 +126,7 @@
                          'Save-Base64StringToFile',
                          'Save-FileHash',
                          'Test-WindowsIsAdmin',
-                         'Test-PathIsUnsafe',
+                         'Test-DirectoryIsProtected',
                          'Initialize-GitRepo',
                          'Join-StringByNewlinesWithDelimiter',
                          'Get-DevOpsConfigSetting',
@@ -169,7 +168,11 @@
                          'Convert-RegistryFileToPowershellCode',
                          'ConvertTo-UnescapedRegistryStrings',
                          'ConvertTo-RegSZEscaped',
-                         'ConvertTo-RegSZUnescaped'
+                         'ConvertTo-RegSZUnescaped',
+                         'Invoke-Ngen',
+                         'Add-NumericSuffixToFile',
+                         'Add-StringSuffixToFile',
+                         'ConvertTo-FlatDirectory'
 
     PrivateData = @{
         PSData = @{
