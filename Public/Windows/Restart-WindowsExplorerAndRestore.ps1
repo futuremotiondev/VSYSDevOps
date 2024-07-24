@@ -17,7 +17,7 @@
     Invoke-Expression "start explorer.exe" | Out-Null
     if ($ShowProgress) {
         Write-SpectreHost -Message "[#FFFFFF]Restarted[/] [#A8E9D9]Explorer[/] "
-        Start-CountdownTimer -Seconds 1 -CountdownUnit SecondsDecimal -FormatString "Restarting Direct Folders in [%TIME%]s"
+        Show-CountdownTimer -Seconds 1 -CountdownUnit SecondsDecimal -FormatString "Restarting Direct Folders in [%TIME%]s"
     }else{
         Start-Sleep -Seconds 1
     }
@@ -27,7 +27,7 @@
 
     if ($ShowProgress) {
         Write-Host ""
-        Start-CountdownTimer -Milliseconds 200 -CountdownUnit Milliseconds -FormatString "Re-Opening windows in [%TIME%]ms"
+        Show-CountdownTimer -Milliseconds 200 -CountdownUnit Milliseconds -FormatString "Re-Opening windows in [%TIME%]ms"
         Write-Host ""
     }else{
         Start-Sleep -Milliseconds 200
@@ -35,7 +35,7 @@
     foreach ($path in $oWindows) {
         if ($ShowProgress) {
             Write-SpectreHost -Message "[#FFFFFF]Re-Opening[/] [#ecb8ae]$path[/]"
-            Start-CountdownTimer -Milliseconds 200 -CountdownUnit Milliseconds -FormatString "[%TIME%]ms"
+            Show-CountdownTimer -Milliseconds 200 -CountdownUnit Milliseconds -FormatString "[%TIME%]ms"
         }else{
             Start-Sleep -Milliseconds 200
         }

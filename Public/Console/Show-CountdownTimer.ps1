@@ -1,4 +1,4 @@
-﻿function Start-CountdownTimer {
+﻿function Show-CountdownTimer {
 
     param (
 

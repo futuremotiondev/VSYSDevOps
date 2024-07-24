@@ -37,7 +37,7 @@
                          "Microsoft.VisualBasic"
 
     FunctionsToExport =  'Convert-iTermColorsToINI',
-                         'Start-CountdownTimer',
+                         'Show-CountdownTimer',
                          'Convert-PlaintextListToArray',
                          'Convert-CommaSeparatedListToPlaintextTable',
                          'Convert-JsonKeysToCommaSeparatedString',
@@ -122,7 +122,6 @@
                          'New-TempDirectory',
                          'Format-StringReplaceDiacritics',
                          'Format-StringRemoveUnusualSymbols',
-                         'Format-StringTitleCase',
                          'Save-Base64StringToFile',
                          'Save-FileHash',
                          'Test-WindowsIsAdmin',
@@ -172,7 +171,8 @@
                          'Invoke-Ngen',
                          'Add-NumericSuffixToFile',
                          'Add-StringSuffixToFile',
-                         'ConvertTo-FlatDirectory'
+                         'ConvertTo-FlatDirectory',
+                         'Show-SystemOSClockResolution'
 
     PrivateData = @{
         PSData = @{

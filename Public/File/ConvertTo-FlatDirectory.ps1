@@ -41,10 +41,10 @@ function ConvertTo-FlatDirectory {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [String[]] $InputPath,
+        [String[]] $Path,
         [int32] $DuplicatePadding = 2,
         [String] $PaddingSeparator = " ",
-        [Int32] $MaxThreads = 14
+        [Int32] $MaxThreads = 8
     )
 
     begin {
@@ -53,26 +53,30 @@ function ConvertTo-FlatDirectory {
 
 
     process {
-        foreach ($Path in $InputPath) {
-            if (Test-Path -Path $Path -PathType Container) {
-                $PathList.Add($Path)
-            } else {
-                Write-Warning "Passed value is not a folder. ($Path)"
-            }
+        foreach ($Folder in $Path) {
+            $PathList.Add($Folder)
         }
     }
 
     end {
 
+        if($PathList.Count -eq 1){
+            $MaxThreads = 1
+        }
 
-        foreach ($Path in $PathList) {
 
-            if (Test-DirectoryIsProtected -Path $Path) {
-                throw "Passed path is a protected operating system directory or within one. ($Path)"
+        $PathList | ForEach-Object -Parallel {
+
+            $Directory = $_
+            $DuplicatePadding = $Using:DuplicatePadding
+            $PaddingSeparator = $Using:PaddingSeparator
+
+            if (Test-DirectoryIsProtected -Path $Directory) {
+                throw "Passed path is a protected operating system directory or within one. ($Directory)"
             }
 
             $TempPath = (New-TempDirectory).FullName
-            Move-Item -Path $Path'\*' -Destination $TempPath -Force | Out-Null
+            Move-Item -Path $Directory'\*' -Destination $TempPath -Force | Out-Null
             $AllFiles = [IO.DirectoryInfo]::new($TempPath).GetFiles('*', 'AllDirectories')
 
             $AllFiles | ForEach-Object -Parallel {
@@ -80,16 +84,19 @@ function ConvertTo-FlatDirectory {
                 $DuplicatePadding = $Using:DuplicatePadding
                 $PaddingSeparator = $Using:PaddingSeparator
 
-                $DestinationPath = $Using:Path
+                $DestinationPath = $Using:Directory
                 $Filename = [System.IO.Path]::GetFileName($_)
                 $FilepathInTemp = $_.FullName
 
                 $DestFilepath = Join-Path $DestinationPath -ChildPath $Filename
                 $DestFilepath = Get-UniqueFileOrFolderNameIfDuplicate -Path $DestFilepath
 
-                Move-Item -LiteralPath $FilepathInTemp -Destination $DestFilepath -Force
+                Move-Item -LiteralPath $FilepathInTemp -Destination $DestFilepath -Force | Out-Null
 
-            } -ThrottleLimit $MaxThreads
-        }
+            } -ThrottleLimit 8
+
+            $TempPath | Remove-Item -Recurse -Force
+
+        } -ThrottleLimit $MaxThreads
     }
 }
