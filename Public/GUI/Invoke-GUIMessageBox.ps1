@@ -1,11 +1,5 @@
 using namespace System.Windows.Forms
 using namespace System.Drawing
-
-[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms')    | out-null
-[System.Reflection.Assembly]::LoadWithPartialName('presentationframework')   | out-null
-[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')          | out-null
-[System.Reflection.Assembly]::LoadWithPartialName('WindowsFormsIntegration') | out-null
-
 function Invoke-GUIMessageBox {
     [CmdletBinding()]
     param (

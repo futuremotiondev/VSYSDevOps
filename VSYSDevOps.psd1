@@ -30,8 +30,10 @@
                          "$PSScriptRoot\lib\Microsoft.Toolkit.Uwp.Notifications.dll",
                          "$PSScriptRoot\lib\Microsoft.Windows.SDK.NET.dll",
                          "$PSScriptRoot\lib\WinRT.Runtime.dll",
-                         "$PSScriptRoot\lib\HtmlAgilityPack.dll",                         "System.Drawing",
+                         "$PSScriptRoot\lib\HtmlAgilityPack.dll",
+                         "System.Drawing",
                          "System.Windows.Forms",
+                         "WindowsFormsIntegration",
                          "PresentationCore",
                          "PresentationFramework",
                          "Microsoft.VisualBasic"
