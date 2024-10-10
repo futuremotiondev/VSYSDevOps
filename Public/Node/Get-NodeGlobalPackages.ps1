@@ -67,7 +67,7 @@ function Get-NodeGlobalPackages {
 
     # If no versions are passed, retrieve all of them.
     if(!$Versions){
-        $VersionList = Get-InstalledNodeVersionsWithNVM -VersionOnly
+        $VersionList = (Get-InstalledNodeVersionsWithNVM).Version
     }else{
         $VersionList = $Versions
     }

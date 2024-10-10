@@ -180,3 +180,65 @@ function ConvertTo-UnescapedRegistryStrings {
         }
     }
 }
+
+
+$Reg4X = @'
+[HKEY_CURRENT_USER\SOFTWARE\Adobe\Adobe Substance 3D Designer\session\projectMRUList]
+"project0"="D:/3D/Materials/Substance SBSAR/Concrete/filled_cement_wall.sbsar"
+"project1"="D:/3D/Materials/Substance SBSAR/Concrete/abandoned_burned_concrete_wall.sbsar"
+"project2"="D:/3D/Materials/Substance SBSAR/Concrete/concrete_wall_waterfall_pattern.sbsar"
+"project3"="D:/3D/Materials/Adobe Substance SBS/Aged Scratched Metal/aged_scratched_metal.sbs"
+"project4"="D:/3D/Materials/Adobe Substance/Concrete/stained_concrete_floor.sbsar"
+"project5"="D:/3D/Materials/Adobe Substance/Concrete/concrete_sidewalk_patch_01.sbsar"
+'@
+$Reg1 = @'
+@="\"%FM_BIN%\\hideexec.exe\" C:\\Program Files\\PowerShell\\7\\pwsh.exe -WindowStyle Hidden -RemoveWorkingDirectoryTrailingCharacter -WorkingDirectory \"%V!\" -Command \"Start-Process 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -Verb runAS;Exit\""
+'@
+
+$Reg1b = @'
+@="\"C:\\Program Files\\Git\\git-bash.exe\" \"--cd=%v.\""
+'@
+
+$Reg1c = @'
+"project5"="\"C:\\Program Files\\Git\\git-bash.exe\" \"--cd=%v.\""
+'@
+
+$Reg2 = @'
+[HKEY_CLASSES_ROOT\Drive\shell\c3_PowerShell7Admin\command]
+@="\"%FM_BIN%\\hideexec.exe\" C:\\Program Files\\PowerShell\\7\\pwsh.exe -WindowStyle Hidden -RemoveWorkingDirectoryTrailingCharacter -WorkingDirectory \"%V!\" -Command \"Start-Process 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -Verb runAS;Exit\""
+'@
+
+$Reg3 = @'
+[HKEY_CURRENT_USER\SOFTWARE\Discord\Modules\discord_aegis]
+"Path_x64"=hex(7):5c,00,5c,00,3f,00,5c,00,43,00,3a,00,5c,00,55,00,73,00,65,00,\
+  72,00,73,00,5c,00,66,00,75,00,74,00,75,00,72,00,5c,00,41,00,70,00,70,00,44,\
+  00,61,00,74,00,61,00,5c,00,4c,00,6f,00,63,00,61,00,6c,00,5c,00,44,00,69,00,\
+  73,00,63,00,6f,00,72,00,64,00,5c,00,61,00,70,00,70,00,2d,00,31,00,2e,00,30,\
+  00,2e,00,39,00,31,00,35,00,33,00,5c,00,6d,00,6f,00,64,00,75,00,6c,00,65,00,\
+  73,00,5c,00,64,00,69,00,73,00,63,00,6f,00,72,00,64,00,5f,00,6d,00,6f,00,64,\
+  00,75,00,6c,00,65,00,73,00,2d,00,31,00,5c,00,64,00,69,00,73,00,63,00,6f,00,\
+  72,00,64,00,5f,00,6d,00,6f,00,64,00,75,00,6c,00,65,00,73,00,5c,00,63,00,30,\
+  00,63,00,64,00,61,00,35,00,63,00,37,00,37,00,33,00,32,00,38,00,32,00,30,00,\
+  5c,00,64,00,69,00,73,00,63,00,6f,00,72,00,64,00,5f,00,61,00,65,00,67,00,69,\
+  00,73,00,5f,00,78,00,36,00,34,00,2e,00,64,00,6c,00,6c,00,00,00
+'@
+
+$Reg4 = @'
+[HKEY_CLASSES_ROOT\SystemFileAssociations\.ico\Shell\a04_ConversionUtilities\Shell\a04_ConvertToPNGAll\command]
+@=hex(7):22,00,25,00,46,00,4d,00,5f,00,42,00,49,00,4e,00,25,00,5c,00,53,00,69,\
+  00,6e,00,67,00,6c,00,65,00,49,00,6e,00,73,00,74,00,61,00,6e,00,63,00,65,00,\
+  41,00,63,00,63,00,75,00,6d,00,75,00,6c,00,61,00,74,00,6f,00,72,00,2e,00,65,\
+  00,78,00,65,00,22,00,20,00,2d,00,74,00,3a,00,31,00,34,00,30,00,20,00,2d,00,\
+  66,00,20,00,22,00,2d,00,63,00,3a,00,70,00,77,00,73,00,68,00,20,00,2d,00,6e,\
+  00,6f,00,70,00,72,00,6f,00,66,00,69,00,6c,00,65,00,20,00,2d,00,6e,00,6f,00,\
+  65,00,78,00,69,00,74,00,20,00,2d,00,43,00,6f,00,6d,00,6d,00,61,00,6e,00,64,\
+  00,20,00,5c,00,22,00,26,00,20,00,27,00,25,00,46,00,4d,00,5f,00,50,00,53,00,\
+  5f,00,57,00,52,00,41,00,50,00,50,00,45,00,52,00,53,00,25,00,5c,00,49,00,6d,\
+  00,61,00,67,00,65,00,5c,00,49,00,6d,00,67,00,4f,00,70,00,73,00,2d,00,41,00,\
+  30,00,32,00,2d,00,43,00,6f,00,6e,00,76,00,65,00,72,00,74,00,49,00,43,00,4f,\
+  00,74,00,6f,00,50,00,4e,00,47,00,2e,00,70,00,73,00,31,00,27,00,20,00,2d,00,\
+  46,00,69,00,6c,00,65,00,4c,00,69,00,73,00,74,00,20,00,24,00,66,00,69,00,6c,\
+  00,65,00,73,00,20,00,5c,00,22,00,22,00,20,00,22,00,25,00,31,00,22,00,00,00
+'@
+
+ConvertTo-UnescapedRegistryStrings -String $Reg3

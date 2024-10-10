@@ -88,7 +88,7 @@ function Save-Base64StringToFile {
                 $FileSaveDestination = $DestinationFile
             }
             else{
-                $FileSaveDestination = Get-UniqueFileOrFolderNameIfDuplicate -Path $DestinationFile
+                $FileSaveDestination = Get-UniqueNameIfDuplicate -LiteralPath $DestinationFile
             }
         }
 

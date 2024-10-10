@@ -2,43 +2,28 @@
 
 class PythonVersions : IValidateSetValuesGenerator {
     [string[]] GetValidValues() {
-        $v = Get-PythonInstalledVersions -VersionOnly
+        [String[]] $v = ($script:PythonInstalledVersionsCompleter).Version
         return $v
     }
 }
 
 function Install-PythonGlobalPackages {
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 0)]
         [ValidateSet([PythonVersions])]
-        $Version,
+        [String[]] $Versions,
 
-        [Parameter(Mandatory=$false)]
-        [Switch]
-        $Prompt,
-
-        [Parameter(Mandatory,ValueFromRemainingArguments)]
-        [String[]]
-        $Packages
-
+        [Parameter(Mandatory, Position = 1)]
+        [String[]] $Packages
     )
 
-    if($Prompt){
-        $PackagesList = $Packages
-        $Plural = 'package'
-        if($Packages.Count -gt 1){
-            $Plural = 'packages'
-            $PackagesList = $Packages -join ', '
+    $PYLauncherCMD = Get-Command py.exe -CommandType Application
+    if(!$PYLauncherCMD) { throw "Py Launcher (py.exe) is not available in PATH." }
+
+    $Versions | ForEach-Object {
+        foreach ($Package in $Packages) {
+            $Params = "-$_", '-m', 'pip', 'install', $Package.Trim()
+            & $PYLauncherCMD $Params
         }
-        Write-SpectreHost "The $Plural [white]$PackagesList[/] will be installed in the following Python version: [white]$Version[/]"
-        $Result = Read-SpectreConfirm "Do you want to continue?" -DefaultAnswer n
-        if(!$Result) { exit }
-    }
-
-    $PYCmd = Get-Command py.exe
-
-    foreach ($Package in $Packages) {
-        $Params = "-$Version", '-m', 'pip', 'install', $Package.Trim()
-        & $PYCmd $Params
     }
 }

@@ -3,13 +3,10 @@
     Clear-Host
     Write-Host ""
 
-    try {
-        $PYCmd = Get-Command py.exe -CommandType Application
-    } catch {
-        throw "Can't find py.exe in PATH (Python Launcher)."
-    }
+    $PYCmd = Get-Command py.exe -CommandType Application -ErrorAction SilentlyContinue
+    if(!$PYCmd) {throw "Python Launcher (py.exe) isn't available in PATH."}
 
-    $PyVersions = Get-PythonInstalledVersions -VersionOnly -ReverseResults
+    $PyVersions = (Get-PythonInstallations -SuppressFreeThreaded).Version
     if([String]::IsNullOrEmpty($PyVersions)){
         throw "No installed versions of Python were found."
     }
@@ -25,8 +22,6 @@
         $pyPIPPath       =  ''
         $pyPythonVersion =  ''
 
-        ($PYPipString -match $rePIPDetails)
-
         if ($PYPipString -match $rePIPDetails) {
             $pyPIPVersion    =  $matches[1]
             $pyPIPPath       =  $matches[2]
@@ -37,7 +32,7 @@
         Write-SpectreHost "[#FFFFFF]PIP Location: [#aeebd3]$pyPIPPath[/][/]"
         Write-Host ""
 
-        $PYParams2 = "-$Version", '-m', 'pip', 'install', '--upgrade', 'pip'
+        $PYParams2 = "-$Version", '-m', 'pip', 'install', '--upgrade', 'pip', '--no-warn-script-location'
         & $PYCmd $PYParams2
 
         Write-Host ""

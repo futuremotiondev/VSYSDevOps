@@ -23,7 +23,7 @@
     # Leave commented out to import into any host.
     # PowerShellHostName = ''
 
-    RequiredModules    = @('PwshSpectreConsole')
+    RequiredModules    = @('PwshSpectreConsole', 'PSParallelPipeline')
 
     RequiredAssemblies = "$PSScriptRoot\Lib\PythonVENVObject.dll",
                          "$PSScriptRoot\lib\Ookii.Dialogs.WinForms.dll",
@@ -62,7 +62,6 @@
                          'Test-PathIsLikelyFile',
                          'Confirm-PythonFolderIsVENV',
                          'Confirm-PythonPyPiPackageExists',
-                         'Get-PythonInstalledVersions',
                          'Get-MinicondaInstallDetails',
                          'Get-PythonVENVDetails',
                          'Install-PythonGlobalPackages',
@@ -89,6 +88,7 @@
                          'Rename-RandomizeFilenames',
                          'Request-WindowsAdminRights',
                          'Request-WindowsExplorerRefresh',
+                         'Request-ExplorerRefresh',
                          'Restart-WindowsExplorerAndRestore',
                          'Save-FilesToFolderByWord',
                          'Save-FolderToSubfolderByWord',
@@ -120,7 +120,7 @@
                          'Get-Enum',
                          'Get-ModulePrivateFunctions',
                          'Get-RandomAlphanumericString',
-                         'Get-UniqueFileOrFolderNameIfDuplicate',
+                         'Get-UniqueNameIfDuplicate',
                          'New-TempDirectory',
                          'Format-StringReplaceDiacritics',
                          'Format-StringRemoveUnusualSymbols',
@@ -174,7 +174,21 @@
                          'Add-NumericSuffixToFile',
                          'Add-StringSuffixToFile',
                          'ConvertTo-FlatDirectory',
-                         'Show-SystemOSClockResolution'
+                         'Show-SystemOSClockResolution',
+                         'Remove-ANSICodesFromString',
+                         'Test-DirectoryForPwshFiles',
+                         'Test-DirectoryIsEmpty',
+                         'New-Log',
+                         'Resolve-SymbolicLinks',
+                         'Convert-SymbolicLinksToFiles',
+                         'Remove-EmptyDirectories',
+                         'Test-IsValidGuid',
+                         'Resolve-WindowsSIDToIdentifier',
+                         'Get-InstalledNodeVersion',
+                         'New-ViteProject',
+                         'Expand-ArchivesInDirectory',
+                         'Get-PythonInstallations'
+
 
     PrivateData = @{
         PSData = @{

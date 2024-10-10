@@ -22,8 +22,16 @@
         Start-Sleep -Seconds 1
     }
 
-    $cmd = 'start "" "C:\Program Files\Direct Folders\df.exe"'
-    Start-Process 'cmd' -ArgumentList "/c $cmd"
+    $DirectFoldersUserInstall = "C:\Users\futur\AppData\Local\Programs\Direct Folders\df.exe"
+    $DirectFoldersMachineInstall = "C:\Program Files\Direct Folders\df.exe"
+    if(Test-Path $DirectFoldersUserInstall -PathType Leaf){
+        $cmd = 'start "" "C:\Users\futur\AppData\Local\Programs\Direct Folders\df.exe"'
+        Start-Process 'cmd' -ArgumentList "/c $cmd"
+    }
+    elseif(Test-Path $DirectFoldersMachineInstall -PathType Leaf){
+        $cmd = 'start "" "C:\Program Files\Direct Folders\df.exe"'
+        Start-Process 'cmd' -ArgumentList "/c $cmd"
+    }
 
     if ($ShowProgress) {
         Write-Host ""

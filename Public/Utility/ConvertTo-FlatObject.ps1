@@ -169,7 +169,7 @@
     param(
 
         [parameter( Mandatory = $True,
-                    ValueFromPipeline = $True)]
+            ValueFromPipeline = $True)]
         [PSObject[]]$InputObject,
 
         [string[]]$Exclude = "",
@@ -182,212 +182,181 @@
 
         [int]$MaxDepth = 10
     )
-    Begin
-    {
+    Begin {
         #region FUNCTIONS
 
-            #Before adding a property, verify that it matches a Like comparison to strings in $Include...
-            Function IsIn-Include {
-                param($prop)
-                if(-not $Include) {$True}
-                else {
-                    foreach($Inc in $Include)
-                    {
-                        if($Prop -like $Inc)
-                        {
-                            $True
-                        }
+        #Before adding a property, verify that it matches a Like comparison to strings in $Include...
+        Function IsIn-Include {
+            param($prop)
+            if (-not $Include) { $True }
+            else {
+                foreach ($Inc in $Include) {
+                    if ($Prop -like $Inc) {
+                        $True
                     }
                 }
             }
+        }
 
-            #Before adding a value, verify that it matches a Like comparison to strings in $Value...
-            Function IsIn-Value {
-                param($val)
-                if(-not $Value) {$True}
-                else {
-                    foreach($string in $Value)
-                    {
-                        if($val -like $string)
-                        {
-                            $True
-                        }
+        #Before adding a value, verify that it matches a Like comparison to strings in $Value...
+        Function IsIn-Value {
+            param($val)
+            if (-not $Value) { $True }
+            else {
+                foreach ($string in $Value) {
+                    if ($val -like $string) {
+                        $True
                     }
                 }
             }
+        }
 
-            Function Get-Exclude {
-                [cmdletbinding()]
-                param($obj)
+        Function Get-Exclude {
+            [cmdletbinding()]
+            param($obj)
 
-                #Exclude default props if specified, and anything the user specified.  Thanks to Jaykul for the hint on [type]!
-                    if($ExcludeDefault)
-                    {
-                        Try
-                        {
-                            $DefaultTypeProps = @( $obj.gettype().GetProperties() | Select -ExpandProperty Name -ErrorAction Stop )
-                            if($DefaultTypeProps.count -gt 0)
-                            {
-                                Write-Verbose "Excluding default properties for $($obj.gettype().Fullname):`n$($DefaultTypeProps | Out-String)"
-                            }
-                        }
-                        Catch
-                        {
-                            Write-Verbose "Failed to extract properties from $($obj.gettype().Fullname): $_"
-                            $DefaultTypeProps = @()
-                        }
+            #Exclude default props if specified, and anything the user specified.  Thanks to Jaykul for the hint on [type]!
+            if ($ExcludeDefault) {
+                Try {
+                    $DefaultTypeProps = @( $obj.gettype().GetProperties() | select -ExpandProperty Name -ErrorAction Stop )
+                    if ($DefaultTypeProps.count -gt 0) {
+                        Write-Verbose "Excluding default properties for $($obj.gettype().Fullname):`n$($DefaultTypeProps | Out-String)"
                     }
-
-                    @( $Exclude + $DefaultTypeProps ) | Select -Unique
+                } Catch {
+                    Write-Verbose "Failed to extract properties from $($obj.gettype().Fullname): $_"
+                    $DefaultTypeProps = @()
+                }
             }
 
-            #Function to recurse the Object, add properties to object
-            Function Recurse-Object {
-                [cmdletbinding()]
-                param(
-                    $Object,
-                    [string[]]$path = '$Object',
-                    [psobject]$Output,
-                    $depth = 0
-                )
+            @( $Exclude + $DefaultTypeProps ) | select -Unique
+        }
 
-                # Handle initial call
-                    Write-Verbose "Working in path $Path at depth $depth"
-                    Write-Debug "Recurse Object called with PSBoundParameters:`n$($PSBoundParameters | Out-String)"
-                    $Depth++
+        #Function to recurse the Object, add properties to object
+        Function Recurse-Object {
+            [cmdletbinding()]
+            param(
+                $Object,
+                [string[]]$path = '$Object',
+                [psobject]$Output,
+                $depth = 0
+            )
+
+            # Handle initial call
+            Write-Verbose "Working in path $Path at depth $depth"
+            Write-Debug "Recurse Object called with PSBoundParameters:`n$($PSBoundParameters | Out-String)"
+            $Depth++
+
+            #Exclude default props if specified, and anything the user specified.
+            $ExcludeProps = @( Get-Exclude $object )
+
+            #Get the children we care about, and their names
+            $Children = $object.psobject.properties | where { $ExcludeProps -notcontains $_.Name }
+            Write-Debug "Working on properties:`n$($Children | select -ExpandProperty Name | Out-String)"
+
+            #Loop through the children properties.
+            foreach ($Child in @($Children)) {
+                $ChildName = $Child.Name
+                $ChildValue = $Child.Value
+
+                Write-Debug "Working on property $ChildName with value $($ChildValue | Out-String)"
+                # Handle special characters...
+                if ($ChildName -match '[^a-zA-Z0-9_]') {
+                    $FriendlyChildName = "'$ChildName'"
+                } else {
+                    $FriendlyChildName = $ChildName
+                }
+
+                #Add the property.
+                if ((IsIn-Include $ChildName) -and (IsIn-Value $ChildValue) -and $Depth -le $MaxDepth) {
+                    $ThisPath = @( $Path + $FriendlyChildName ) -join "."
+                    $Output | Add-Member -MemberType NoteProperty -Name $ThisPath -Value $ChildValue
+                    Write-Verbose "Adding member '$ThisPath'"
+                }
+
+                #Handle null...
+                if ($ChildValue -eq $null) {
+                    Write-Verbose "Skipping NULL $ChildName"
+                    continue
+                }
+
+                #Handle evil looping.  Will likely need to expand this.  Any thoughts on a better approach?
+                if (
+                    (
+                        $ChildValue.GetType() -eq $Object.GetType() -and
+                        $ChildValue -is [datetime]
+                    ) -or
+                    (
+                        $ChildName -eq "SyncRoot" -and
+                        -not $ChildValue
+                    )
+                ) {
+                    Write-Verbose "Skipping $ChildName with type $($ChildValue.GetType().fullname)"
+                    continue
+                }
+
+                #Check for arrays by checking object type (this is a fix for arrays with 1 object) otherwise check the count of objects
+                if (($ChildValue.GetType()).basetype.Name -eq "Array") {
+                    $IsArray = $true
+                } else {
+                    $IsArray = @($ChildValue).count -gt 1
+                }
+
+                $count = 0
+
+                #Set up the path to this node and the data...
+                $CurrentPath = @( $Path + $FriendlyChildName ) -join "."
 
                 #Exclude default props if specified, and anything the user specified.
-                    $ExcludeProps = @( Get-Exclude $object )
+                $ExcludeProps = @( Get-Exclude $ChildValue )
 
-                #Get the children we care about, and their names
-                    $Children = $object.psobject.properties | Where {$ExcludeProps -notcontains $_.Name }
-                    Write-Debug "Working on properties:`n$($Children | select -ExpandProperty Name | Out-String)"
+                #Get the children's children we care about, and their names.  Also look for signs of a hashtable like type
+                $ChildrensChildren = $ChildValue.psobject.properties | where { $ExcludeProps -notcontains $_.Name }
+                $HashKeys = if ($ChildValue.Keys -notlike $null -and $ChildValue.Values) {
+                    $ChildValue.Keys
+                } else {
+                    $null
+                }
+                Write-Debug "Found children's children $($ChildrensChildren | select -ExpandProperty Name | Out-String)"
 
-                #Loop through the children properties.
-                foreach($Child in @($Children))
-                {
-                    $ChildName = $Child.Name
-                    $ChildValue = $Child.Value
-
-                    Write-Debug "Working on property $ChildName with value $($ChildValue | Out-String)"
-                    # Handle special characters...
-                        if($ChildName -match '[^a-zA-Z0-9_]')
-                        {
-                            $FriendlyChildName = "'$ChildName'"
-                        }
-                        else
-                        {
-                            $FriendlyChildName = $ChildName
-                        }
-
-                    #Add the property.
-                        if((IsIn-Include $ChildName) -and (IsIn-Value $ChildValue) -and $Depth -le $MaxDepth)
-                        {
-                            $ThisPath = @( $Path + $FriendlyChildName ) -join "."
-                            $Output | Add-Member -MemberType NoteProperty -Name $ThisPath -Value $ChildValue
-                            Write-Verbose "Adding member '$ThisPath'"
-                        }
-
-                    #Handle null...
-                        if($ChildValue -eq $null)
-                        {
-                            Write-Verbose "Skipping NULL $ChildName"
-                            continue
-                        }
-
-                    #Handle evil looping.  Will likely need to expand this.  Any thoughts on a better approach?
-                        if(
-                            (
-                                $ChildValue.GetType() -eq $Object.GetType() -and
-                                $ChildValue -is [datetime]
-                            ) -or
-                            (
-                                $ChildName -eq "SyncRoot" -and
-                                -not $ChildValue
-                            )
-                        )
-                        {
-                            Write-Verbose "Skipping $ChildName with type $($ChildValue.GetType().fullname)"
-                            continue
-                        }
-
-                     #Check for arrays by checking object type (this is a fix for arrays with 1 object) otherwise check the count of objects
-                        if (($ChildValue.GetType()).basetype.Name -eq "Array") {
-                            $IsArray = $true
-                        }
-                        else {
-                            $IsArray = @($ChildValue).count -gt 1
-                        }
-
-                        $count = 0
-
-                    #Set up the path to this node and the data...
-                        $CurrentPath = @( $Path + $FriendlyChildName ) -join "."
-
-                    #Exclude default props if specified, and anything the user specified.
-                        $ExcludeProps = @( Get-Exclude $ChildValue )
-
-                    #Get the children's children we care about, and their names.  Also look for signs of a hashtable like type
-                        $ChildrensChildren = $ChildValue.psobject.properties | Where {$ExcludeProps -notcontains $_.Name }
-                        $HashKeys = if($ChildValue.Keys -notlike $null -and $ChildValue.Values)
-                        {
-                            $ChildValue.Keys
-                        }
-                        else
-                        {
-                            $null
-                        }
-                        Write-Debug "Found children's children $($ChildrensChildren | select -ExpandProperty Name | Out-String)"
-
-                    #If we aren't at max depth or a leaf...
-                    if(
+                #If we aren't at max depth or a leaf...
+                if (
                         (@($ChildrensChildren).count -ne 0 -or $HashKeys) -and
-                        $Depth -lt $MaxDepth
-                    )
-                    {
-                        #This handles hashtables.  But it won't recurse...
-                            if($HashKeys)
-                            {
-                                Write-Verbose "Working on hashtable $CurrentPath"
-                                foreach($key in $HashKeys)
-                                {
-                                    Write-Verbose "Adding value from hashtable $CurrentPath['$key']"
-                                    $Output | Add-Member -MemberType NoteProperty -name "$CurrentPath['$key']" -value $ChildValue["$key"]
-                                    $Output = Recurse-Object -Object $ChildValue["$key"] -Path "$CurrentPath['$key']" -Output $Output -depth $depth
-                                }
-                            }
-                        #Sub children?  Recurse!
-                            else
-                            {
-                                if($IsArray)
-                                {
-                                    foreach($item in @($ChildValue))
-                                    {
-                                        Write-Verbose "Recursing through array node '$CurrentPath'"
-                                        $Output = Recurse-Object -Object $item -Path "$CurrentPath[$count]" -Output $Output -depth $depth
-                                        $Count++
-                                    }
-                                }
-                                else
-                                {
-                                    Write-Verbose "Recursing through node '$CurrentPath'"
-                                    $Output = Recurse-Object -Object $ChildValue -Path $CurrentPath -Output $Output -depth $depth
-                                }
-                            }
+                    $Depth -lt $MaxDepth
+                ) {
+                    #This handles hashtables.  But it won't recurse...
+                    if ($HashKeys) {
+                        Write-Verbose "Working on hashtable $CurrentPath"
+                        foreach ($key in $HashKeys) {
+                            Write-Verbose "Adding value from hashtable $CurrentPath['$key']"
+                            $Output | Add-Member -MemberType NoteProperty -Name "$CurrentPath['$key']" -Value $ChildValue["$key"]
+                            $Output = Recurse-Object -Object $ChildValue["$key"] -Path "$CurrentPath['$key']" -Output $Output -depth $depth
                         }
                     }
-
-                $Output
+                    #Sub children?  Recurse!
+                    else {
+                        if ($IsArray) {
+                            foreach ($item in @($ChildValue)) {
+                                Write-Verbose "Recursing through array node '$CurrentPath'"
+                                $Output = Recurse-Object -Object $item -Path "$CurrentPath[$count]" -Output $Output -depth $depth
+                                $Count++
+                            }
+                        } else {
+                            Write-Verbose "Recursing through node '$CurrentPath'"
+                            $Output = Recurse-Object -Object $ChildValue -Path $CurrentPath -Output $Output -depth $depth
+                        }
+                    }
+                }
             }
+
+            $Output
+        }
 
         #endregion FUNCTIONS
     }
-    Process
-    {
-        Foreach($Object in $InputObject)
-        {
+    Process {
+        Foreach ($Object in $InputObject) {
             #Flatten the XML and write it to the pipeline
-                Recurse-Object -Object $Object -Output $( New-Object -TypeName PSObject )
+            Recurse-Object -Object $Object -Output $( New-Object -TypeName PSObject )
         }
     }
 }

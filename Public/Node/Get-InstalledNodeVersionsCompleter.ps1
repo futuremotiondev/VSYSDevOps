@@ -1,47 +1,18 @@
 ﻿function Get-InstalledNodeVersionsCompleter {
     [CmdletBinding()]
-    param (
-        [Switch] $InsertV
-    )
+    param ( [Switch] $InsertV )
 
-    # Version Parser
-    $GetVersions = {
-        param (
-            [Parameter(Mandatory)] $NVMInput,
-            [Switch] $InsertLeadingV
-        )
+    if(-not($env:NVM_HOME)){ return $null }
+    $NVMCmd = Get-Command nvm -ErrorAction SilentlyContinue
+    if(-not($NVMCmd)){ return $null }
 
-        $NVMInput = $NVMInput -split "\r?\n"
-
-        for ($idx = 0; $idx -lt $NVMInput.Count; $idx++) {
-            if([String]::IsNullOrEmpty($NVMInput[$idx])){
-                continue
-            }
-
-            $nodeVersion = $NVMInput[$idx] -replace '\* ', ''
-            $nodeVersion = $nodeVersion -replace '\(([\w\s\-]+)\)', ''
-            $nodeVersion = $nodeVersion.Trim()
-            if($InsertLeadingV){$nodeVersion = "v$nodeVersion"}
-            @($nodeVersion)
-        }
+    $NVMOutput = & $NVMCmd list
+    $Arr = ($NVMOutput -split "\r?\n")
+    $Output = foreach ($Item in $Arr) {
+        if([String]::IsNullOrEmpty($Item)){ continue }
+        $v = (($Item -replace '\* ', '') -replace '\(([\w\s\-]+)\)', '').Trim()
+        if($InsertV){$v = "v$v"}
+        @($v)
     }
-
-    ## Check if NVM is available on the system PATH
-    try {
-        $NVMCMD = Get-Command nvm -CommandType Application
-    } catch {
-        $ErrorText = "NVM Node Version Manager isn't installed or available in your PATH environment variable."
-        $eRecord = [System.Management.Automation.ErrorRecord]::new(
-            [System.Management.Automation.CommandNotFoundException]::new($ErrorText),
-            'CommandNotFound',
-            'CommandNotFound',
-            $NVMCMD
-        )
-        Write-Error $eRecord
-        return 2
-    }
-
-    $NODE1 = & $NVMCMD list
-    $Output = & $GetVersions -NVMInput $NODE1 -InsertLeadingV:$InsertV
     $Output
 }

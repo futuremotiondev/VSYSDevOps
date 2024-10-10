@@ -5,7 +5,7 @@
         [switch] $NavigateToFolder
     )
 
-    Clear-Host
+    Push-Location -LiteralPath $PWD -StackName UpdatePIPVenv
 
     if(-not(Confirm-PythonFolderIsVENV -Folder $Folder)){
         throw "Passed -Folder ($Folder) is not a Python VENV"
@@ -26,11 +26,14 @@
     Write-SpectreHost "[#FFFFFF]PIP Location: [#aeebd3]$pyPIPPath[/][/]"
     Write-Host ""
 
-    & pip install --upgrade pip
+    & pip install --upgrade pip --no-warn-script-location
 
     Write-Host ""
 
     if($NavigateToFolder){
         Set-Location $Folder
+    }
+    else{
+        Pop-Location -StackName UpdatePIPVenv
     }
 }

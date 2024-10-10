@@ -1,4 +1,3 @@
-
 function Request-WindowsExplorerRefresh {
     param (
         [switch] $SendF5,
@@ -15,6 +14,10 @@ function Request-WindowsExplorerRefresh {
             $item.Refresh()
         }
     }
+
+    $ie4cmd = Get-Command ie4uinit.exe -CommandType Application
+    $params = '-show'
+    & $ie4cmd $params
 
     if($SendF5){
         $wshell = New-Object -ComObject wscript.shell;

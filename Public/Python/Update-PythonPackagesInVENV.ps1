@@ -5,6 +5,8 @@
         [switch] $NavigateToFolder
     )
 
+    Push-Location -LiteralPath $PWD -StackName UpdateVENVPkg
+
     if(-not(Confirm-PythonFolderIsVENV -Folder $Folder)){
         throw "Passed -Folder ($Folder) is not a Python VENV"
     }
@@ -20,5 +22,8 @@
 
     if($NavigateToFolder){
         Set-Location $Folder
+    }
+    else {
+        Pop-Location -StackName UpdateVENVPkg
     }
 }

@@ -48,37 +48,37 @@ public static extern uint QueryDosDevice(string lpDeviceName, StringBuilder lpTa
             }
 
             [PSCustomObject]@{
-                DriveLetter = $DriveLetter
-                DevicePath = $sbPathName.ToString()
-                DiskNumber = $PartitionData.DiskNumber
-                FriendlyName = $DiskData.FriendlyName
-                Model = $DiskData.Model
-                SerialNumber = $DiskData.SerialNumber
+                DriveLetter        = $DriveLetter
+                DevicePath         = $sbPathName.ToString()
+                DiskNumber         = $PartitionData.DiskNumber
+                FriendlyName       = $DiskData.FriendlyName
+                Model              = $DiskData.Model
+                SerialNumber       = $DiskData.SerialNumber
                 NumberOfPartitions = $DiskData.NumberOfPartitions
-                HealthStatus = $VolumeData.HealthStatus
-                PartitionStyle = $DiskData.PartitionStyle
-                BusType = $DiskData.BusType
-                FirmwareVersion = $DiskData.FirmwareVersion
-                DriveType = $VolumeData.DriveType
-                FileSystem = $VolumeData.FileSystemType
-                LogicalSectorSize = $DiskData.LogicalSectorSize
+                HealthStatus       = $VolumeData.HealthStatus
+                PartitionStyle     = $DiskData.PartitionStyle
+                BusType            = $DiskData.BusType
+                FirmwareVersion    = $DiskData.FirmwareVersion
+                DriveType          = $VolumeData.DriveType
+                FileSystem         = $VolumeData.FileSystemType
+                LogicalSectorSize  = $DiskData.LogicalSectorSize
                 AllocationUnitSize = $VolumeData.AllocationUnitSize
-                FriendlyLabel = $VolumeData.FileSystemLabel
-                Capacity = Format-Bytes -Bytes $VolumeData.Size
-                RemainingSpace = Format-Bytes -Bytes $VolumeData.SizeRemaining
-                VolumeName = $volume
-                GptType = $PartitionData.GptType
-                GUID = $PartitionData.Guid
-                IsActive  = $PartitionData.IsActive
-                IsBoot = $PartitionData.IsBoot
-                IsDAX = $PartitionData.IsDAX
-                IsHidden = $PartitionData.IsHidden
-                IsOffline = $PartitionData.IsOffline
-                IsReadOnly = $PartitionData.IsReadOnly
-                IsShadowCopy = $PartitionData.IsShadowCopy
-                IsSystem = $PartitionData.IsSystem
-                MbrType = $PartitionData.MbrType
-                Offset = $PartitionData.Offset
+                FriendlyLabel      = $VolumeData.FileSystemLabel
+                Capacity           = Format-Bytes -Bytes $VolumeData.Size
+                RemainingSpace     = Format-Bytes -Bytes $VolumeData.SizeRemaining
+                VolumeName         = $volume
+                GptType            = $PartitionData.GptType
+                GUID               = $PartitionData.Guid
+                IsActive           = $PartitionData.IsActive
+                IsBoot             = $PartitionData.IsBoot
+                IsDAX              = $PartitionData.IsDAX
+                IsHidden           = $PartitionData.IsHidden
+                IsOffline          = $PartitionData.IsOffline
+                IsReadOnly         = $PartitionData.IsReadOnly
+                IsShadowCopy       = $PartitionData.IsShadowCopy
+                IsSystem           = $PartitionData.IsSystem
+                MbrType            = $PartitionData.MbrType
+                Offset             = $PartitionData.Offset
             }
 
         } else {
@@ -87,4 +87,3 @@ public static extern uint QueryDosDevice(string lpDeviceName, StringBuilder lpTa
     } while ([PInvoke.Win32Utils]::FindNextVolume([IntPtr] $volumeHandle, $sbVolumeName, $Max));
 }
 
-Get-AllDriveInfo

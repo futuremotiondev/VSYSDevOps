@@ -62,7 +62,7 @@
     )
 
     begin {
-        & "C:\ProgramData\miniconda3\shell\condabin\conda-hook.ps1"
+        & "C:\Python\miniconda3\shell\condabin\conda-hook.ps1"
         conda activate demucs
 
         $ResolvedPathList = [System.Collections.Generic.List[String]]@()

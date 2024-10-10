@@ -89,7 +89,7 @@ function Out-FileHash {
             if($SaveToFile -and ($DestinationDirectory -eq 'Desktop')){
                 $DestinationDirectory = [Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
                 $DestinationFile = Join-Path $DestinationDirectory -ChildPath "Generated Hashes.txt"
-                $DestinationFile = Get-UniqueFileOrFolderNameIfDuplicate -Path $DestinationFile
+                $DestinationFile = Get-UniqueNameIfDuplicate -LiteralPath $DestinationFile
             }
 
             if($SaveToFile){

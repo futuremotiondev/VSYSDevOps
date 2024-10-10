@@ -78,9 +78,10 @@ function Set-WindowsFolderIcon {
                 # FOF_NOERRORUI         0x0400 don't put up error UI
                 #
                 $shell = New-Object -com Shell.Application
+
                 $shell.NameSpace($FolderToChange).MoveHere($TmpIniPath, 0x0004 + 0x0010 + 0x0400)
 
-                Request-WindowsExplorerRefresh
+                Request-ExplorerRefresh
 
                 # Clean up and remove our temp directory
                 Remove-Item -LiteralPath $TmpDir -Recurse -Force
@@ -99,7 +100,7 @@ function Set-WindowsFolderIcon {
                 }
                 (Get-Item -LiteralPath $FolderToChange).Attributes = 'Directory'
 
-                Request-WindowsExplorerRefresh
+                Request-ExplorerRefresh
 
             }
         }

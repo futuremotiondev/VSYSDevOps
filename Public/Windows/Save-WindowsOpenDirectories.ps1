@@ -17,7 +17,7 @@
     }
 
     $DestinationFile = Join-Path $DestinationFolder -ChildPath $DestinationFilename
-    $DPath = Get-UniqueFileOrFolderNameIfDuplicate -Path $DestinationFile
+    $DPath = Get-UniqueNameIfDuplicate -LiteralPath $DestinationFile
     New-Item -Path $DPath -ItemType File -Force | Out-Null
 
     [Array] $oWindows = Get-WindowsOpenDirectories

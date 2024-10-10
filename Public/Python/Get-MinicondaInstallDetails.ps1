@@ -46,7 +46,9 @@ function Get-MinicondaInstallDetails {
             $ShellCondaHookFile = Join-Path $ShellCondabin "conda-hook.ps1"
             $CondaUninstallExe = Join-Path $Path "Uninstall-Miniconda3.exe"
 
-            $ShellCondabinPwshModuleArgsStr = (& "C:\Miniconda3\Scripts\conda.exe" "shell.powershell" "hook") -split "`n"
+            $CondaExeCMD = Get-Command $CondaExe -CommandType Application
+            $ShellCondabinPwshModuleArgsStr = (& $CondaExeCMD "shell.powershell" "hook") -split "`n"
+
             foreach ($line in $ShellCondabinPwshModuleArgsStr) {
                 if ($line -match '\$CondaModuleArgs\s*=' ) {
                     $ShellCondabinPwshModuleArgs = $line.TrimStart('$CondaModuleArgs = ')
@@ -81,7 +83,6 @@ function Get-MinicondaInstallDetails {
             $CondaBinDir = Join-Path $Path -ChildPath 'bin'
 
             [PSCustomObject][Ordered]@{
-                Name                            =  "Miniconda3"
                 CondaRoot                       =  $Path
                 CondaExe                        =  $CondaExe
                 CondaVersion                    =  $CondaVersion
@@ -107,3 +108,5 @@ function Get-MinicondaInstallDetails {
         }
     }
 }
+
+Get-MinicondaInstallDetails
