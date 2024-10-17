@@ -2,7 +2,7 @@
 
 class NodeVersions : IValidateSetValuesGenerator {
     [string[]] GetValidValues() {
-        $v = Get-InstalledNodeVersionsCompleter
+        $v = Get-NVMInstalledNodeVersions
         return $v
     }
 }
@@ -11,7 +11,7 @@ class NodeVersions : IValidateSetValuesGenerator {
         Uninstalls one or more Node.js global packages for a specific node version.
 
     .DESCRIPTION
-        The Uninstall-NodeGlobalPackages function uninstalls specified Node.js global packages from the
+        The Uninstall-NVMNodeGlobalPackages function uninstalls specified Node.js global packages from the
         given node version. The user can choose to be prompted for confirmation before each uninstallation.
 
     .PARAMETER Version
@@ -26,15 +26,15 @@ class NodeVersions : IValidateSetValuesGenerator {
         uninstalling the packages. The default is to not prompt.
 
     .EXAMPLE
-        Uninstall-NodeGlobalPackages -Version "14.0.0" -Packages "package1", "package2", "package3"
+        Uninstall-NVMNodeGlobalPackages -Version "14.0.0" -Packages "package1", "package2", "package3"
 
     .EXAMPLE
-        Uninstall-NodeGlobalPackages -Version "14.0.0" -Packages "package1" -Prompt
+        Uninstall-NVMNodeGlobalPackages -Version "14.0.0" -Packages "package1" -Prompt
 
     .NOTES
         In order to use this function, nvm (Node Version Manager) and npm must be installed in your system.
 #>
-function Uninstall-NodeGlobalPackages {
+function Uninstall-NVMNodeGlobalPackages {
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [ValidateSet([NodeVersions])]
@@ -55,22 +55,20 @@ function Uninstall-NodeGlobalPackages {
         if($Result -ne 'True') { exit }
     }
 
-    # Check if NVM is available
-    try {
-        $NVMCmd = Get-Command nvm.exe -CommandType Application
-    } catch {
-        Write-Error "Can't find nvm.exe (Node Version Manager)"
-        throw $_
+    $NVMCmd = Get-Command nvm.exe -CommandType Application -ErrorAction SilentlyContinue
+    if(!$NVMCmd){
+        throw "nvm.exe (Node Version Manager) can't be found. Make sure it's installed."
     }
 
     & $NVMCmd use $Version
+    while (-not(Test-Path -LiteralPath "$env:NVM_SYMLINK")) {}
 
-    # Check if NPM is available
-    try {
-        $NPMCmd = Get-Command npm.cmd
-    } catch {
-        Write-Error "Can't find NPM (Is node installed correctly?)"
-        throw $_
+    $NPMCmd = Get-Command npm.cmd -CommandType Application -ErrorAction SilentlyContinue
+    if(!$NPMCmd){
+        $NPMCmd = Get-Command "$env:NVM_SYMLINK\npm.cmd" -CommandType Application -ErrorAction SilentlyContinue
+        if(!$NPMCmd){
+            throw "Can't find npm.cmd in PATH."
+        }
     }
 
     $PackagesString = $Packages -join ' '

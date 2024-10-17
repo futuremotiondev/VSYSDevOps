@@ -186,13 +186,3 @@ function Split-StringByDelimiter {
         return $resultObj
     }
 }
-
-
-
-
-
-# $StrToProcess =
-# "       Convert-CommaSeparatedListToPlaintextTable.ps1 ,   Convert-JsonKeysToCommaSeparatedString.ps1   , Convert-JsonKeysToLines.ps1  ,Convert-PlaintextListToArray.ps1,   Find-SeparatorInList.ps1,Join-StringByNewlinesWithDelimiter.ps1,Split-StringByDelimiter.ps1,  Split-StringByDelimiterAndCombineLines.ps1"
-
-# $Result = Split-StringByDelimiter -InputString $StrToProcess -Delimiters ',' -OutputType Object -WhitespaceTrimming All -NewDelimiter "%%\r\n"
-# $Result.ResultArray

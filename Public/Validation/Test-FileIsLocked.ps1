@@ -1,34 +1,30 @@
 function Test-FileIsLocked {
 
     [cmdletbinding(DefaultParameterSetName = 'Path')]
-    param(
-        [parameter(
-            Mandatory,
-            ParameterSetName  = 'Path',
-            Position = 0,
-            ValueFromPipeline,
-            ValueFromPipelineByPropertyName
-        )]
-        [ValidateNotNullOrEmpty()]
-        [SupportsWildcards()]
-        [string[]] $Path,
 
-        [parameter(
-            Mandatory,
-            ParameterSetName = 'LiteralPath',
+    param(
+
+        [Parameter(
+            Mandatory = $true,
             Position = 0,
-            ValueFromPipelineByPropertyName
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = "Path"
         )]
-        [ValidateScript({
-            if ($_ -notmatch '[\?\*]') {
-                $true
-            } else {
-                throw 'Wildcard characters *, ? are not acceptable with -LiteralPath'
-            }
-        })]
+        [SupportsWildcards()]
         [ValidateNotNullOrEmpty()]
+        [String[]] $Path,
+
+        [Parameter(
+            Mandatory = $true,
+            Position = 0,
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = "LiteralPath"
+        )]
         [Alias('PSPath')]
-        [string[]] $LiteralPath
+        [ValidateNotNullOrEmpty()]
+        [String[]] $LiteralPath
+
     )
 
     begin {

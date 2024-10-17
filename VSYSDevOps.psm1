@@ -35,4 +35,3 @@ $script:PairOfTargetLanguageAndCode = $script:LanguagesCsv | Where-Object { $_.C
 if (-not $script:PythonInstalledVersionsCompleter) {
     $script:PythonInstalledVersionsCompleter = Get-PythonInstallations -SuppressFreeThreaded
 }
-

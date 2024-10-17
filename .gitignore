@@ -56,3 +56,5 @@ test/
 PSGoogleTranslate/
 Languages.csv
 python_venv
+backup/
+Backup/
