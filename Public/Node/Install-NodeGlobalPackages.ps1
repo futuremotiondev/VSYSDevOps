@@ -14,7 +14,8 @@ function Install-NodeGlobalPackages {
         [String] $Version,
         [Parameter(Mandatory)]
         [String[]] $Packages,
-        [Switch] $Prompt
+        [Switch] $Prompt,
+        [Switch] $SwitchBack
     )
 
     if($Prompt){
@@ -25,7 +26,9 @@ function Install-NodeGlobalPackages {
         if($Result -ne 'True') { exit }
     }
 
-    $CurrentActiveVersion = Get-NVMActiveNodeVersion
+    if($SwitchBack){
+        $CurrentActiveVersion = Get-NVMActiveNodeVersion
+    }
 
     $NVMCmd = Get-NVMCommand -ErrorAction Stop
     $NPMCmd = Get-NPMCommand -ErrorAction Stop
@@ -38,11 +41,16 @@ function Install-NodeGlobalPackages {
     if($Packages.Count -gt 1){
         $PackagesString = $Packages -join ' '
     }
+    else{
+        $PackagesString = $PackagesString.Trim()
+    }
 
     Invoke-Expression "$NPMCmd install -g $PackagesString"
 
-    Write-SpectreHost "Switching back to your previously activated version of Node ($CurrentActiveVersion)"
-    & $NVMCmd use $CurrentActiveVersion
-    while (-not(Test-Path -LiteralPath "$env:NVM_SYMLINK")) {}
-
+    if($SwitchBack){
+        Write-SpectreHost "Switching back to your previously activated version of Node ($CurrentActiveVersion)"
+        & $NVMCmd use $CurrentActiveVersion
+        while (-not(Test-Path -LiteralPath "$env:NVM_SYMLINK")) {}
+    }
 }
+

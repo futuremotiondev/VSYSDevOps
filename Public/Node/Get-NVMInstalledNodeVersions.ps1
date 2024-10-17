@@ -1,5 +1,5 @@
 ﻿function Get-NVMInstalledNodeVersions {
-
+    [CmdletBinding()]
     param (
         [switch] $Details
     )
@@ -35,11 +35,9 @@
             $GlobalModuleList = [System.Collections.Generic.List[Object]]@()
 
             foreach ($ModuleDir in $ModuleDirectories) {
-                $Scoped = $false
                 $Dirname = [System.IO.Path]::GetFileName($ModuleDir)
                 if($Dirname.StartsWith('@')){
                     $ModuleDir = Get-ChildItem -LiteralPath $ModuleDir -Directory -Depth 0 | % {$_.FullName}
-                    $Scoped = $true
                 }
                 $JSONFile = Get-ChildItem -LiteralPath $ModuleDir -Include 'package.json' | % {$_.FullName}
                 $JSONData = Get-Content $JSONFile | ConvertFrom-Json

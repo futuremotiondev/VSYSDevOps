@@ -1,4 +1,4 @@
-﻿function Get-LatestNodeWithNVM {
+﻿function Get-NVMLatestNodeVersionInstalled {
     [CmdletBinding()]
     param ()
 

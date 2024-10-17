@@ -24,7 +24,7 @@
         }
 
         try {
-            Invoke-RestMethod @npmParams
+            $null = Invoke-RestMethod @npmParams
         } catch {
             Write-Host "Package doesn't exist in the NPM registry"
             return $false

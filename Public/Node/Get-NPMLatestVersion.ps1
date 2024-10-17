@@ -30,5 +30,3 @@ function Get-NPMLatestVersion {
     }
 
 }
-
-Get-NPMLatestVersion -OnError Stop

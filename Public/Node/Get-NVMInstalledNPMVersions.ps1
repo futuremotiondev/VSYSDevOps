@@ -9,14 +9,14 @@ class InstalledNVMNodeVersions : IValidateSetValuesGenerator {
 }
 
 function Get-NVMInstalledNPMVersions {
-
+    [CmdletBinding()]
     param (
         [Parameter(ValueFromPipeline)]
         [ValidateSet([InstalledNVMNodeVersions])]
         [String] $NodeVersion = 'All'
     )
 
-    $NodeVersions = Get-NVMInstalledNodeVersions
+    $NodeVersions = Get-NVMInstalledNodeVersions -Details
     $NPMObjects = [System.Collections.Generic.List[Object]]@()
 
     foreach ($Version in $NodeVersions) {
@@ -25,25 +25,16 @@ function Get-NVMInstalledNPMVersions {
         }
         else {
             $NPMJson = [System.IO.Path]::Combine($Version.Path, 'node_modules', 'npm', 'package.json')
-            Write-Host -f Green "`$NPMJson:" $NPMJson
-            $NPMJsonContent = $NPMJson | ConvertFrom-Json -Depth 20
+            $NPMJsonContent = Get-Content $NPMJson | ConvertFrom-Json
             $NPMVersion = $NPMJsonContent.version
-            $NPMDocsHomepage = $NPMJsonContent.homepage
-            $NPMGitHub = $NPMJsonContent.repository.url -replace '/cli/issues', ''
             $NPMSupportedVersions = $NPMJsonContent.engines.node
-            $ActiveNodeVersion = Get-NVMActiveNodeVersion
-            $IsActivated = ($Version.Version -eq $ActiveNodeVersion) ? $true : $false
-
+            $LatestNPMVersion = (Get-NPMLatestVersion).Version
             $OutputObject = [PSCustomObject]@{
-                Label = "Node.js v$($Version.Version)"
-                Version = $Version.Version
-                NPMVersion = $NPMVersion
-                NPMDocs = $NPMDocsHomepage
-                NPMGitHub = $NPMGitHub
+                Label = "Node v$($Version.Version)"
+                CurrentNPMVersion = $NPMVersion
+                LatestNPMVersion = $LatestNPMVersion
                 SupportedNodeVersions = $NPMSupportedVersions
                 NPMUpdateCommand = 'npm install -g npm@latest'
-                NodeInstall = $Version.Path
-                IsActivated = $IsActivated
             }
 
             $NPMObjects.Add($OutputObject)

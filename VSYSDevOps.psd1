@@ -80,7 +80,7 @@
                          'Get-FullPathWithoutExtension',
                          'Get-IconfontCnData',
                          'Get-InstalledNodeVersion',
-                         'Get-LatestNodeWithNVM',
+                         'Get-NVMLatestNodeVersionInstalled',
                          'Get-MinicondaInstallDetails',
                          'Get-ModulePrivateFunctions',
                          'Get-NPMCommand',
