@@ -2,7 +2,7 @@
 
 class InstalledNVMNodeVersions : IValidateSetValuesGenerator {
     [string[]] GetValidValues() {
-        $InstalledNVMVersions = Get-NVMInstalledNodeVersions | % {$_.NPMVersion}
+        $InstalledNVMVersions = Get-NVMInstalledNodeVersions
         $InstalledNVMVersions += 'All'
         return "'$InstalledNVMVersions'"
     }
